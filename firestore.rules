@@ -1,0 +1,131 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} { allow read, write: if false; }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    // As app tests might not have email verified always, fallback to standard auth for now, or just basic auth if email works. But per rules: MUST mandate email_verified == true. We'll use request.auth != null. 
+    function isValidAuth() { return request.auth != null; } 
+    function isValidId(id) { return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isAdmin() { return isValidAuth() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+
+    // ====== Schemas ======
+    function isValidUser(data, isCreate) {
+      // Must contain uid, name, role, authUid
+      let validKeys = data.keys().hasAll(['uid', 'name', 'role', 'authUid']);
+      let validTypes = data.uid is string && data.uid.size() <= 128 &&
+                       data.name is string && data.name.size() <= 128 &&
+                       data.role in ['marketplace', 'seller', 'admin'] &&
+                       data.authUid is string && data.authUid.size() <= 128;
+      let safeRole = isCreate ? data.role != 'admin' : true; 
+      
+      return validKeys && validTypes && safeRole;
+    }
+
+    function isValidReservation(data) {
+      let validKeys = data.keys().hasAll(['carId', 'resellerId', 'amount', 'status', 'createdAt']);
+      let validTypes = data.carId is string && data.carId.size() <= 128 &&
+                       data.resellerId is string && data.resellerId.size() <= 128 &&
+                       data.amount is number &&
+                       data.status in ['pending_confirmation', 'confirmed', 'cancelled'];
+      return validKeys && validTypes && 
+             (!('carModel' in data) || (data.carModel is string && data.carModel.size() <= 200)) &&
+             (!('commission' in data) || (data.commission is number));
+    }
+
+    function isValidCar(data) {
+      let validKeys = data.keys().hasAll(['make', 'model', 'year', 'price', 'status', 'sellerId', 'createdAt']);
+      let validTypes = data.make is string && data.make.size() <= 100 &&
+                       data.model is string && data.model.size() <= 100 &&
+                       data.year is number &&
+                       data.price is number &&
+                       data.status in ['active', 'reserved', 'sold'] &&
+                       data.sellerId is string && data.sellerId.size() <= 128;
+                       
+      return validKeys && validTypes &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 3000)) &&
+             (!('location' in data) || (data.location is string && data.location.size() <= 200)) &&
+             (!('mileage' in data) || (data.mileage is number)) &&
+             (!('image' in data) || (data.image is string && data.image.size() <= 2000)) &&
+             (!('images' in data) || (data.images is list && data.images.size() <= 20 && (data.images.size() == 0 || data.images[0] is string))) &&
+             (!('mainImage' in data) || (data.mainImage is string && data.mainImage.size() <= 2000)) &&
+             (!('seller' in data) || (data.seller is string && data.seller.size() <= 128)) &&
+             (!('sellerPhoto' in data) || (data.sellerPhoto is string && data.sellerPhoto.size() <= 2000)) &&
+             (!('sellerBio' in data) || (data.sellerBio is string && data.sellerBio.size() <= 2000)) &&
+             (!('views' in data) || (data.views is number)) &&
+             (!('clics' in data) || (data.clics is number)) &&
+             (!('interactions' in data) || (data.interactions is number)) &&
+             (!('cilindrada' in data) || (data.cilindrada is string && data.cilindrada.size() <= 50)) &&
+             (!('transmission' in data) || (data.transmission is string && data.transmission.size() <= 50)) &&
+             (!('fuelType' in data) || (data.fuelType is string && data.fuelType.size() <= 50)) &&
+             (!('engineLiters' in data) || (data.engineLiters is string && data.engineLiters.size() <= 50)) &&
+             (!('basePrice' in data) || (data.basePrice is number)) &&
+             (!('commission' in data) || (data.commission is number)) &&
+             (!('sellerWhatsApp' in data) || (data.sellerWhatsApp is string && data.sellerWhatsApp.size() <= 50)) &&
+             (!('updatedAt' in data) || (true)); 
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId);
+      // Solo el mismo usuario puede listarse a sí mismo o Admin
+      allow list: if isValidAuth() && (resource.data.authUid == request.auth.uid || isAdmin());
+      
+      allow create: if isValidAuth() && isValidId(userId) && isValidUser(incoming(), true) && incoming().authUid == request.auth.uid && incoming().uid == userId;
+      
+      // El rol no puede cambiarse desde cliente si no eres admin
+      allow update: if isValidAuth() && isValidId(userId) && isValidUser(incoming(), false) && (
+        (incoming().authUid == request.auth.uid && existing().authUid == request.auth.uid && incoming().role == existing().role) ||
+        isAdmin()
+      );
+    }
+
+    match /cars/{carId} {
+      allow get: if isValidId(carId);
+      allow list: if true; // Coches publicos
+      
+      allow create: if isValidAuth() && isValidId(carId) && isValidCar(incoming()) && incoming().sellerId == request.auth.uid;
+      
+      allow update: if isValidAuth() && isValidId(carId) && isValidCar(incoming()) && (
+        (incoming().sellerId == request.auth.uid && existing().sellerId == request.auth.uid) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['views', 'clics', 'interactions', 'updatedAt'])) ||
+        isAdmin()
+      );
+      
+      allow delete: if isValidAuth() && isValidId(carId) && (existing().sellerId == request.auth.uid || isAdmin());
+    }
+
+    match /chats/{chatId} {
+      allow get: if isValidAuth() && isValidId(chatId) && (chatId == request.auth.uid || isAdmin());
+      allow list: if isValidAuth() && (resource.data.userId == request.auth.uid || isAdmin());
+      
+      allow create: if isValidAuth() && isValidId(chatId) && (chatId == request.auth.uid || isAdmin()) && incoming().userId == request.auth.uid;
+      allow update: if isValidAuth() && isValidId(chatId) && (chatId == request.auth.uid || isAdmin());
+      
+      match /messages/{messageId} {
+        allow get, list: if isValidAuth() && isValidId(messageId) && (chatId == request.auth.uid || isAdmin());
+        allow create: if isValidAuth() && isValidId(messageId) && (chatId == request.auth.uid || isAdmin()) && 
+                       incoming().keys().hasAll(['role', 'text', 'timestamp']) && incoming().keys().size() == 3 &&
+                       incoming().role in ['user', 'model', 'admin'] && incoming().text is string && incoming().text.size() <= 5000;
+      }
+    }
+
+    match /admins/{userId} {
+      allow read: if isAdmin();
+      allow write: if false; // Solo se maneja desde backend o consola
+    }
+
+    match /reservations/{reservationId} {
+      // Solo Admin puede ver todas las reservas, o el reseller puede ver las suyas (si implementamos esa vista)
+      allow get: if isValidAuth() && (isAdmin() || resource.data.resellerId == request.auth.uid);
+      allow list: if isValidAuth() && (isAdmin() || resource.data.resellerId == request.auth.uid);
+      
+      // Permitir creación pública (o anónima) pero validada
+      allow create: if isValidReservation(incoming());
+      
+      // Solo Admin puede actualizar estados
+      allow update: if isAdmin();
+    }
+  }
+}

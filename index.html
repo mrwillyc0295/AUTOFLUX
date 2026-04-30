@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>AutoFlux.io | E-commerce Automotriz PWA</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link rel="preconnect" href="https://firebasestorage.googleapis.com">
+    
+    <!-- Preload fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" as="style">
+    
+    <!-- Theme color for PWA shell -->
+    <meta name="theme-color" content="#0B0F1A">
+    
+    <style>
+      /* App Shell CSS inline para carga instantánea */
+      body, html { margin: 0; padding: 0; background-color: #0B0F1A; }
+      #shell-spinner {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+        border-top-color: #3b82f6; border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div id="shell-spinner"></div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Lógica de Pre-fetching para modelos "Extrema Demanda" en formato WebP
+      // Se ejecuta de manera asíncrona para no bloquear el hilo principal.
+      window.addEventListener('load', () => {
+        const extremeDemandImages = [
+           "https://images.unsplash.com/photo-1590362891991-f7009df38198?auto=format&fit=crop&q=80&w=1200&fm=webp",
+           "https://images.unsplash.com/photo-1503376760367-15106198940c?auto=format&fit=crop&q=80&w=1200&fm=webp"
+        ];
+        
+        if ('serviceWorker' in navigator) {
+          extremeDemandImages.forEach(url => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = url;
+            document.head.appendChild(link);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* Elemento eliminado a petición del usuario */
+div#root:nth-of-type(1) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > button:nth-of-type(2) {
+  display: none !important;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --animate-spin-slow: spin 3s linear infinite;
+  --animate-shake: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  
+  --color-brand-50: #f0f7ff;
+  --color-brand-100: #e0effe;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-900: #1e3a8a;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+@layer base {
+  body {
+    @apply bg-[#0B0F1A] text-slate-200 antialiased;
+  }
+
+  ::placeholder {
+    @apply text-slate-600 font-medium opacity-100;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  
+  .glass-input {
+    @apply bg-white/5 border border-white/10 focus:border-brand-500/50 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Markdown Table Enhancements */
+  .prose table {
+    @apply w-full border-collapse my-6 rounded-2xl overflow-hidden border border-white/10 bg-white/5;
+  }
+
+  .prose thead {
+    @apply bg-white/10 border-b border-white/10;
+  }
+
+  .prose th {
+    @apply px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 text-left;
+  }
+
+  .prose td {
+    @apply px-4 py-4 text-sm border-b border-white/5 text-slate-300;
+  }
+
+  .prose tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .prose tr:hover td {
+    @apply bg-white/[0.05] transition-colors;
+  }
+
+  /* Light theme overrides for chat */
+  .prose-slate table {
+    @apply border-slate-200 bg-white shadow-sm;
+  }
+
+  .prose-slate thead {
+    @apply bg-slate-50 border-slate-200;
+  }
+
+  .prose-slate th {
+    @apply text-slate-500;
+  }
+
+  .prose-slate td {
+    @apply border-slate-100 text-slate-600;
+  }
+
+  .prose-slate tr:hover td {
+    @apply bg-slate-50/50;
+  }
+
+  /* Sonner Loading Spinner Customization */
+  [data-sonner-toast] [data-loading="true"] {
+    @apply !text-green-500;
+  }
+}

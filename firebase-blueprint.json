@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "user": {
+      "title": "UserProfile",
+      "description": "User profile information for marketplace users and sellers",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "authUid": { "type": "string" },
+        "name": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "role": { "type": "string", "enum": ["marketplace", "seller", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastSeen": { "type": "string", "format": "date-time" },
+        "bio": { "type": "string" },
+        "photo": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "restricted", "banned"] }
+      },
+      "required": ["uid", "name", "role", "createdAt"]
+    },
+    "car": {
+      "title": "CarVehicle",
+      "description": "Car listing details in the marketplace",
+      "type": "object",
+      "properties": {
+        "make": { "type": "string" },
+        "model": { "type": "string" },
+        "year": { "type": "number" },
+        "price": { "type": "number" },
+        "mileage": { "type": "number" },
+        "location": { "type": "string" },
+        "description": { "type": "string" },
+        "image": { "type": "string" },
+        "images": { "type": "array" },
+        "mainImage": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "reserved", "sold"] },
+        "sellerId": { "type": "string" },
+        "seller": { "type": "string" },
+        "sellerPhoto": { "type": "string" },
+        "sellerBio": { "type": "string" },
+        "views": { "type": "number" },
+        "clics": { "type": "number" },
+        "interactions": { "type": "number" },
+        "cilindrada": { "type": "string" },
+        "fuelType": { "type": "string" },
+        "transmission": { "type": "string" },
+        "basePrice": { "type": "number" },
+        "commission": { "type": "number" },
+        "sellerWhatsApp": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["make", "model", "year", "price", "status", "sellerId", "createdAt"]
+    },
+    "chat": {
+      "title": "ChatHeader",
+      "description": "Header for a chat conversation",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "lastMessage": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "responded", "read", "archived"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "lastMessage", "status", "updatedAt"]
+    },
+    "message": {
+      "title": "ChatMessage",
+      "description": "Individual message in a chat conversation",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["user", "model", "admin"] },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["role", "text", "timestamp"]
+    },
+    "admin": {
+      "title": "AdminAccess",
+      "description": "Document identifying a user as admin",
+      "type": "object",
+      "properties": {
+        "masterKey": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["masterKey", "role", "createdAt"]
+    },
+    "reservation": {
+      "title": "Reservation",
+      "description": "Vehicle reservation record with affiliate tracking",
+      "type": "object",
+      "properties": {
+        "carId": { "type": "string" },
+        "carModel": { "type": "string" },
+        "resellerId": { "type": "string" },
+        "amount": { "type": "number" },
+        "commission": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending_confirmation", "confirmed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["carId", "resellerId", "amount", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "User profiles keyed by UID or wa_ID"
+    },
+    "/cars/{carId}": {
+      "schema": "car",
+      "description": "Vehicle listings"
+    },
+    "/chats/{chatId}": {
+      "schema": "chat",
+      "description": "Chat metadata keyed by user identifier"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "message",
+      "description": "Messages within a conversation"
+    },
+    "/admins/{userId}": {
+      "schema": "admin",
+      "description": "Admin privileges indicator"
+    },
+    "/reservations/{reservationId}": {
+      "schema": "reservation",
+      "description": "Reservation records including affiliate tracking"
+    }
+  }
+}
