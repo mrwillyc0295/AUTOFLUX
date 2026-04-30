@@ -10,7 +10,7 @@ import { cn } from './lib/utils';
 import { MOCK_CARS } from './constants';
 import { Car, Message, UserProfile } from './types';
 import { getAdvisorResponse } from './services/geminiService';
-import { getSmartAnalysis } from './services/advisorService';
+import { getSmartAnalysis, getMarketTrendsAnalysis } from './services/advisorService';
 import { Toaster, toast } from 'sonner';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { CAR_DATA, SUPPORTED_MAKES } from './carData';
@@ -166,6 +166,8 @@ export default function App() {
   const [editingPost, setEditingPost] = useState<any | null>(null);
   const [sharingPost, setSharingPost] = useState<any | null>(null);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [trendsAnalysisResult, setTrendsAnalysisResult] = useState<string | null>(null);
+  const [isAnalyzingTrends, setIsAnalyzingTrends] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassInput, setAdminPassInput] = useState('');
   const [adminError, setAdminError] = useState(false);
@@ -1074,7 +1076,7 @@ export default function App() {
                     )}
 
                     {/* Filters */}
-                    <div className="glass-card p-6 md:p-8 rounded-[2.5rem] mb-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] gap-4 md:gap-6 items-end">
+                    <div className="glass-card p-6 md:p-8 rounded-[2.5rem] mb-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto_auto] gap-4 md:gap-6 items-end">
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Modelo</label>
                         <div className="relative">
@@ -1139,7 +1141,74 @@ export default function App() {
                          <Zap className="w-4 h-4 fill-white group-hover:animate-pulse" />
                          <span>Buscar con IA</span>
                       </button>
+
+                      <button 
+                        onClick={async () => {
+                          if (!checkRateLimit('trends_analysis', 10000)) return;
+                          try {
+                            setIsAnalyzingTrends(true);
+                            toast.loading("Generando análisis estratégico de mercado...", { id: "trends" });
+                            const response = await getMarketTrendsAnalysis(cars);
+                            setTrendsAnalysisResult(response);
+                            toast.success("Análisis estratégico listo", { id: "trends" });
+                          } catch (error) {
+                            toast.error(error instanceof Error ? error.message : "Error al generar análisis estratégico.", { id: "trends" });
+                          } finally {
+                            setIsAnalyzingTrends(false);
+                          }
+                        }}
+                        className="w-full lg:w-auto h-[56px] px-8 bg-white/5 border border-white/10 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.15em] hover:bg-white/10 hover:border-blue-500/50 transition-all flex items-center justify-center gap-3 group shrink-0"
+                      >
+                         <Activity className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
+                         <span>Analizar con IA</span>
+                      </button>
                     </div>
+
+                    {trendsAnalysisResult && (
+                      <div className="fixed inset-0 bg-slate-950/98 backdrop-blur-2xl flex items-center justify-center p-4 md:p-6 z-[130]">
+                        <motion.div 
+                          initial={{ y: 50, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          className="glass-card p-8 md:p-12 rounded-[3.5rem] max-w-4xl w-full border-blue-500/30 shadow-[0_0_100px_rgba(59,130,246,0.1)] relative overflow-hidden"
+                        >
+                          <div className="absolute -top-24 -left-24 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl animate-pulse" />
+                          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl animate-pulse" />
+                          
+                          <div className="flex items-center justify-between mb-8 relative">
+                            <div className="flex items-center gap-4">
+                              <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <TrendingUp className="w-7 h-7 text-white" />
+                              </div>
+                              <div>
+                                <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter">Tendencias del Mercado</h3>
+                                <p className="text-blue-400 font-mono text-[10px] uppercase tracking-[0.3em]">AI-Driven Strategic Insights</p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => setTrendsAnalysisResult(null)}
+                              className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/10"
+                            >
+                              <X className="w-6 h-6" />
+                            </button>
+                          </div>
+
+                          <div className="bg-[#0B0F1A]/50 border border-white/5 rounded-[2.5rem] p-6 md:p-10 mb-8 max-h-[60vh] overflow-y-auto custom-scrollbar relative">
+                            <div className="prose prose-invert prose-blue max-w-none prose-headings:text-white prose-p:text-slate-300 prose-strong:text-blue-400 prose-headings:tracking-tighter prose-li:text-slate-300">
+                              <ReactMarkdown>{trendsAnalysisResult}</ReactMarkdown>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end gap-4">
+                            <button 
+                              onClick={() => setTrendsAnalysisResult(null)} 
+                              className="px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 hover:scale-[1.02] transition-all"
+                            >
+                              Entendido
+                            </button>
+                          </div>
+                        </motion.div>
+                      </div>
+                    )}
 
 
                     
