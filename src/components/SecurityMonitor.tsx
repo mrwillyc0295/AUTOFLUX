@@ -30,20 +30,20 @@ export const SecurityMonitor: React.FC = () => {
           exit={{ opacity: 0, y: -50 }}
           className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] pointer-events-none"
         >
-          <div className="bg-emerald-950/90 border border-emerald-500/30 backdrop-blur-md px-6 py-3 rounded-full flex items-center gap-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Ciberseguridad Activa</span>
+          <div className="bg-emerald-950/90 border border-emerald-500/30 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            <div className="flex items-center gap-1">
+              <ShieldCheck className="w-2.5 h-2.5 text-emerald-400" />
+              <span className="text-[6px] font-bold text-emerald-400 uppercase tracking-widest leading-none">Seguridad</span>
             </div>
-            <div className="w-px h-4 bg-emerald-500/30" />
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-emerald-400" />
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Bugs: 0</span>
+            <div className="w-px h-2 bg-emerald-500/30" />
+            <div className="flex items-center gap-1">
+              <Activity className="w-2.5 h-2.5 text-emerald-400" />
+              <span className="text-[6px] font-bold text-emerald-400 uppercase tracking-widest leading-none">Bugs: 0</span>
             </div>
-            <div className="w-px h-4 bg-emerald-500/30" />
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-emerald-400" />
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Cifrado AES-256</span>
+            <div className="w-px h-2 bg-emerald-500/30" />
+            <div className="flex items-center gap-1">
+              <Lock className="w-2.5 h-2.5 text-emerald-400" />
+              <span className="text-[6px] font-bold text-emerald-400 uppercase tracking-widest leading-none">Cifrado</span>
             </div>
           </div>
         </motion.div>

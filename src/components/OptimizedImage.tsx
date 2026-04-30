@@ -58,7 +58,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
           onError={() => setError(true)}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
-          referrerPolicy="no-referrer"
+          referrerPolicy="no-referrer-when-downgrade"
           className={cn(
             "transition-all duration-700 ease-in-out",
             isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105 blur-sm",

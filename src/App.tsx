@@ -91,7 +91,7 @@ const AUTOfLUX_ADMIN_WHATSAPP = "+584248691131"; // Número real del dueño
 import { FloatingComparisonBar } from './components/FloatingComparisonBar';
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -266,6 +266,20 @@ export default function App() {
     });
 
     return () => unsubscribeAuth();
+  }, []);
+
+  // SISTEMA DE RASTREO DE REFERIDOS (CAPTURAR CÓDIGO)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      console.log("Referido detectado:", refCode);
+      localStorage.setItem('autoflux_ref', refCode);
+      toast.success("Bienvenido a AutoFlux", {
+        description: `Tu asesor de confianza es: ${refCode}. Te brindaremos prioridad de atención.`,
+        duration: 8000
+      });
+    }
   }, []);
 
   // Sync Cars (Paginación nativa via Query)
@@ -539,7 +553,7 @@ export default function App() {
 
   const [filterMake, setFilterMake] = useState("");
   const [filterModel, setFilterModel] = useState("");
-  const [filterYear, setFilterYear] = useState("2022");
+  const [filterYear, setFilterYear] = useState("");
   const [filterPriceMax, setFilterPriceMax] = useState("");
   const [filterCondition, setFilterCondition] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -1060,8 +1074,8 @@ export default function App() {
       </button>
 
 
-      <AnimatePresence>
-        {false && isRegistering && (
+      {false && isRegistering && (
+        <AnimatePresence>
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1070,8 +1084,8 @@ export default function App() {
           >
             {/* Loading UI removed as per user request */}
           </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      )}
 
       {showSplash ? (
         <SplashScreen onComplete={() => setShowSplash(false)} />
@@ -1087,13 +1101,12 @@ export default function App() {
             <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
               {/* Header */}
               <header className="h-20 bg-[#0B0F1A]/80 backdrop-blur-md border-b border-white/5 px-6 md:px-10 flex items-center justify-between shrink-0 z-30 relative">
-                <div className="flex-1" />
-                <div className="flex items-center justify-center flex-1">
+                <div className="flex items-center justify-start flex-1">
                   <button 
                     onClick={() => handleViewChange('marketplace')}
                     className="text-2xl font-extrabold tracking-tighter hover:opacity-80 transition-opacity text-center whitespace-nowrap"
                   >
-                    AutoFlux
+                    Auto<span className="text-blue-600">Flux</span>
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
@@ -1137,11 +1150,11 @@ export default function App() {
                   }}
                 />
                 ) : currentView === 'marketplace' ? (
-                <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-[#0B0F1A] scrollbar-hide">
-                  <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col items-center justify-center gap-2 mb-12 text-center relative">
-                      <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tighter">Hot Deals 🔥</h2>
-                      <p className="text-slate-500 font-medium uppercase text-[10px] tracking-[0.2em]">GALERIA MARKETPLACE PARA VENEZUELA</p>
+                <div className="flex-1 overflow-y-auto p-3 md:p-8 bg-[#0B0F1A]">
+                  <div className="max-w-5xl mx-auto">
+                      <div className="flex flex-col items-center justify-center gap-2 mb-8 text-center relative">
+                        <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tighter">Hot Deals 🔥</h2>
+                        <p className="text-slate-500 font-medium uppercase text-[8px] tracking-[0.2em]">GALERIA MARKETPLACE PARA VENEZUELA</p>
                       
                       {/* Dashboard Shortcut for Sellers/Admins */}
                       {(isAdmin || userProfile?.role === 'admin' || userProfile?.role === 'seller') && (
@@ -1176,9 +1189,9 @@ export default function App() {
                     )}
 
                     {/* Filters */}
-                    <div className="glass-card p-6 md:p-8 rounded-[2.5rem] mb-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto_auto] gap-4 md:gap-6 items-end">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Modelo</label>
+                    <div className="glass-card p-4 md:p-6 rounded-[2rem] mb-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto_auto] gap-3 md:gap-4 items-end">
+                      <div className="space-y-1">
+                        <label className="text-[8px] font-bold text-slate-500 uppercase tracking-widest ml-1">Modelo</label>
                         <div className="relative">
                           <select value={filterModel} onChange={(e) => { setFilterModel(e.target.value); setCurrentPage(1); }} className="w-full p-4 glass-input rounded-2xl text-sm text-white appearance-none cursor-pointer">
                             <option value="" className="bg-[#0B0F1A]">Todos los modelos</option>
@@ -1360,7 +1373,7 @@ export default function App() {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-10">
                       {activeCars.map((car) => (
                         <motion.div 
                           key={car.id}
@@ -1584,12 +1597,15 @@ export default function App() {
                                         const message = `🚀 OPORTUNIDAD: Refiero este ${car.make} ${car.model} de $${car.price.toLocaleString()}. \n\nVer aquí: ${window.location.origin}/car/${car.id}?ref=${encodeURIComponent(finalName)} \n\nReferido por: ${finalName}`;
                                         
                                         window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-                                        toast.success("Refiere este vehículo", { description: `Gana comisiones. Compartiendo como: ${finalName}` });
+                                        toast.success("Sistema de Referidos", { 
+                                          description: `¡Éxito! Estás compartiendo como ${finalName}. Se te notificará si se concreta la venta.`,
+                                          duration: 6000
+                                        });
                                       }}
-                                      className="w-full py-5 bg-green-600/10 border border-green-500/30 rounded-2xl text-green-400 font-bold text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-900/10"
+                                      className="w-full py-5 bg-blue-600/10 border border-blue-500/30 rounded-2xl text-blue-400 font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-blue-600 hover:text-white transition-all shadow-lg shadow-blue-900/10"
                                     >
-                                      <MessageCircle className="w-4 h-4" />
-                                      Gana por Referir
+                                      <Share2 className="w-4 h-4" />
+                                      Referir y Ganar
                                     </button>
 
                                     <button 
@@ -1734,7 +1750,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
                     <div className="lg:col-span-2 space-y-8">
                       {/* Perfil del Vendedor Integrado */}
                       <div className="glass-card p-8 rounded-[2.5rem] border-white/10 shadow-2xl">

@@ -199,7 +199,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ cars, users, onD
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-10 bg-[#0B0F1A] relative scrollbar-hide">
+    <div className="flex-1 overflow-y-auto p-4 md:p-10 bg-[#0B0F1A] relative">
       <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-purple-600/5 to-transparent pointer-events-none" />
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 md:mb-12 gap-6">

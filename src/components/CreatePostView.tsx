@@ -141,7 +141,7 @@ export const CreatePostView: React.FC<CreatePostViewProps> = ({ onBack, onPublis
   if (!carData) return <p className="text-white text-center p-10">Cargando modelos...</p>;
 
   return (
-    <div className="flex-1 overflow-y-auto p-10 bg-[#0B0F1A] scrollbar-hide">
+    <div className="flex-1 overflow-y-auto p-4 md:p-10 bg-[#0B0F1A]">
       <div className="max-w-3xl mx-auto">
         <button 
           onClick={onBack} 

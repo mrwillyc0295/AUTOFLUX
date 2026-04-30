@@ -80,7 +80,7 @@ export const MemberReferralView: React.FC<MemberReferralViewProps> = ({ user, on
                 {copied ? 'Copiado' : 'Copiar'}
               </button>
               <button 
-                onClick={() => window.open(`https://wa.me/?text=Mira%20estos%20autos%20incrementibles%20en%20AutoFlux!%20${encodeURIComponent(referralLink)}`, '_blank')}
+                onClick={() => window.open(`https://wa.me/584248691131?text=Mira%20estos%20autos%20incrementibles%20en%20AutoFlux!%20${encodeURIComponent(referralLink)}`, '_blank')}
                 className="p-3 bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-all"
               >
                 <QrCode className="w-5 h-5" />

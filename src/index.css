@@ -29,6 +29,9 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-
 }
 
 @layer base {
+  html {
+    font-size: 11.2px;
+  }
   body {
     @apply bg-[#0B0F1A] text-slate-200 antialiased;
   }

@@ -26,32 +26,27 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister, 
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="glass-card p-10 rounded-[3rem] max-w-md w-full relative z-10 border-white/10 shadow-2xl">
-        <div className="text-center mb-10">
-          <div className="mb-6">
-            <h1 className="text-5xl font-black text-white tracking-tighter italic">
+      <div className="glass-card p-6 md:p-8 rounded-[2rem] max-w-sm w-full relative z-10 border-white/10 shadow-2xl">
+        <div className="text-center mb-8">
+          <div className="mb-4">
+            <h1 className="text-3xl font-black text-white tracking-tighter italic">
               Auto<span className="text-blue-600">Flux</span>
             </h1>
-            <div className="w-12 h-1.5 bg-blue-600 mx-auto mt-2 rounded-full shadow-lg shadow-blue-500/50" />
+            <div className="w-8 h-1 bg-blue-600 mx-auto mt-1 rounded-full shadow-lg shadow-blue-500/50" />
           </div>
           <h2 
             onClick={onSecretAdminClick}
-            className="text-3xl font-black text-white tracking-tighter mb-2 cursor-pointer hover:text-blue-400 transition-colors uppercase"
+            className="text-xl font-black text-white tracking-tighter mb-1 cursor-pointer hover:text-blue-400 transition-colors uppercase"
           >
             TRABAJO EXPRESS
           </h2>
-          <p className="text-slate-400 font-medium text-[10px] uppercase tracking-widest">
+          <p className="text-slate-400 font-medium text-[8px] uppercase tracking-widest">
             {step === 'role' ? 'ENTRADA RÁPIDA SIN PERMISOS' : 'REGISTRO DE AGENTE DEALER'}
           </p>
         </div>
 
-        {isLoadingGeo ? (
-          <div className="flex flex-col items-center justify-center py-10 gap-4">
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Iniciando Sistemas...</p>
-          </div>
-        ) : step === 'role' ? (
-          <div className="space-y-6">
+        {step === 'role' ? (
+          <div className="space-y-4">
             {/* Botón Marketplace - ACCESO PREMIUM VENEZUELA */}
             <motion.div 
               whileHover={{ scale: 1.02 }}
@@ -60,19 +55,19 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister, 
             >
               <button 
                 onClick={() => onRegister('Invitado', '', 'marketplace')}
-                className="w-full py-8 px-6 rounded-[2rem] font-extrabold text-sm uppercase tracking-[0.2em] transition-all flex flex-col items-center gap-3 relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-2xl shadow-blue-600/30 group-hover:shadow-blue-500/40 cursor-pointer border border-white/10"
+                className="w-full py-6 px-5 rounded-[1.5rem] font-extrabold text-xs uppercase tracking-[0.2em] transition-all flex flex-col items-center gap-2 relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-2xl shadow-blue-600/30 group-hover:shadow-blue-500/40 cursor-pointer border border-white/10"
               >
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <LayoutGrid className="w-16 h-16" />
+                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <LayoutGrid className="w-12 h-12" />
                 </div>
                 <span className="flex items-center justify-center font-black">
-                  <span className="text-2xl mr-3">🇻🇪</span>
+                  <span className="text-xl mr-2">🇻🇪</span>
                   ACCESO AL MARKETPLACE
                 </span>
-                <span className="text-[10px] text-blue-100/70 uppercase tracking-widest font-black bg-white/10 px-4 py-1 rounded-full backdrop-blur-sm">
+                <span className="text-[8px] text-blue-100/70 uppercase tracking-widest font-black bg-white/10 px-3 py-0.5 rounded-full backdrop-blur-sm">
                   ENTRADA EXPRESS • SIN REGISTRO
                 </span>
-                <p className="text-[9px] text-blue-200/50 font-medium lowercase tracking-normal normal-case italic">
+                <p className="text-[8px] text-blue-200/50 font-medium lowercase tracking-normal normal-case italic">
                   Explora el inventario más exclusivo de Venezuela inmediatamente.
                 </p>
               </button>
@@ -89,19 +84,19 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister, 
                   setSelectedRole('seller');
                   setStep('form');
                 }}
-                className="w-full py-8 px-6 rounded-[2rem] font-extrabold text-sm uppercase tracking-[0.2em] transition-all flex flex-col items-center gap-3 relative overflow-hidden bg-slate-900 text-white border border-blue-500/30 hover:border-blue-400 group-hover:bg-slate-800 cursor-pointer shadow-xl"
+                className="w-full py-6 px-5 rounded-[1.5rem] font-extrabold text-xs uppercase tracking-[0.2em] transition-all flex flex-col items-center gap-2 relative overflow-hidden bg-slate-900 text-white border border-blue-500/30 hover:border-blue-400 group-hover:bg-slate-800 cursor-pointer shadow-xl"
               >
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <ShieldCheck className="w-16 h-16" />
+                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <ShieldCheck className="w-12 h-12" />
                 </div>
                 <span className="flex items-center justify-center font-black">
-                  <span className="text-2xl mr-3">🇺🇸</span>
+                  <span className="text-xl mr-2">🇺🇸</span>
                   DEALER PARTNER PROGRAM
                 </span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-black border border-white/10 px-4 py-1 rounded-full">
+                <span className="text-[8px] text-slate-400 uppercase tracking-widest font-black border border-white/10 px-3 py-0.5 rounded-full">
                   SOLO PARA AGENTE EN USA
                 </span>
-                <p className="text-[9px] text-slate-500 font-medium lowercase tracking-normal normal-case italic">
+                <p className="text-[8px] text-slate-500 font-medium lowercase tracking-normal normal-case italic">
                   Programa exclusivo para agentes y dealers en Florida.
                 </p>
               </button>

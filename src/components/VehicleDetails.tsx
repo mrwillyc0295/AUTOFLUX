@@ -84,7 +84,7 @@ export const VehicleDetails: React.FC<VehicleDetailsProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-[#0B0F1A] scrollbar-hide">
+    <div className="flex-1 overflow-y-auto p-4 md:p-10 bg-[#0B0F1A]">
       <div className="max-w-5xl mx-auto">
         <button 
           onClick={onBack} 
