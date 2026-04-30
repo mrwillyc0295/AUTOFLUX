@@ -49,41 +49,6 @@ import { ConfirmationModal } from './components/ConfirmationModal';
 import { MemberReferralView } from './components/MemberReferralView';
 import { OptimizedImage } from './components/OptimizedImage';
 
-const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
-  useEffect(() => {
-    const timer = setTimeout(onComplete, 500);
-    return () => clearTimeout(timer);
-  }, [onComplete]);
-
-  return (
-    <motion.div 
-      className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center p-6"
-      exit={{ opacity: 0 }}
-    >
-      <motion.div 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="text-center space-y-4"
-      >
-        <h1 className="text-5xl font-extrabold text-white tracking-tighter">
-          AutoFlux
-        </h1>
-        <p className="text-slate-400 text-lg font-medium tracking-wide uppercase flex items-center justify-center gap-2">
-          TRABAJO EXPRESS PARA NUESTROS CLIENTES PREMIUM
-        </p>
-      </motion.div>
-
-      <motion.div 
-        initial={{ width: 0 }}
-        animate={{ width: "200px" }}
-        transition={{ duration: 6, ease: "linear" }}
-        className="h-1 bg-blue-600 mt-12 rounded-full"
-      />
-    </motion.div>
-  );
-};
-
 type AppView = 'dashboard' | 'marketplace' | 'seller-dashboard' | 'member-profile' | 'seller-profile' | 'create-post' | 'vehicle-details' | 'admin-dashboard' | 'reservation-payment' | 'comparison' | 'expert-audition' | 'member-referral';
 
 const AUTOfLUX_ADMIN_WHATSAPP = "+584248691131"; // Número real del dueño
@@ -91,7 +56,6 @@ const AUTOfLUX_ADMIN_WHATSAPP = "+584248691131"; // Número real del dueño
 import { FloatingComparisonBar } from './components/FloatingComparisonBar';
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -1087,9 +1051,7 @@ export default function App() {
         </AnimatePresence>
       )}
 
-      {showSplash ? (
-        <SplashScreen onComplete={() => setShowSplash(false)} />
-      ) : !isRegistered && !isAdmin ? (
+      {!isRegistered && !isAdmin ? (
         <RegistrationView 
           onSecretAdminClick={() => setShowAdminLogin(true)}
           onRegister={handleRegistration}

@@ -65,7 +65,7 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister, 
                   ACCESO AL MARKETPLACE
                 </span>
                 <span className="text-[8px] text-blue-100/70 uppercase tracking-widest font-black bg-white/10 px-3 py-0.5 rounded-full backdrop-blur-sm">
-                  ENTRADA EXPRESS • SIN REGISTRO
+                  SOLO PARA CLIENTES VENEZOLANOS
                 </span>
                 <p className="text-[8px] text-blue-200/50 font-medium lowercase tracking-normal normal-case italic">
                   Explora el inventario más exclusivo de Venezuela inmediatamente.

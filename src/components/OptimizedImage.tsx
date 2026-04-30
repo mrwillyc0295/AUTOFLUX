@@ -55,12 +55,16 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           alt={alt}
           onLoad={() => setIsLoaded(true)}
-          onError={() => setError(true)}
+          onError={() => {
+            setError(true);
+            console.error(`Failed to load image: ${optimizedSrc}`);
+          }}
           loading={priority ? "eager" : "lazy"}
+          fetchpriority={priority ? "high" : "auto"}
           decoding="async"
           referrerPolicy="no-referrer-when-downgrade"
           className={cn(
-            "transition-all duration-700 ease-in-out",
+            "transition-all duration-700 ease-in-out w-full h-full object-cover",
             isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105 blur-sm",
             className
           )}
