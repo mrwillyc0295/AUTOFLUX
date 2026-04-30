@@ -5,7 +5,7 @@ export const getAdvisorResponse = async (message: string, history: { role: 'user
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     const model = ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: [
         { role: 'user', parts: [{ text: BUSINESS_RULES }] },
         { role: 'model', parts: [{ text: "Entendido. Estoy listo para actuar como el Asesor de Negocio Inteligente de AutoFlux.io. ¿En qué puedo ayudarte hoy?" }] },

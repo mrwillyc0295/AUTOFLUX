@@ -1,11 +1,31 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
+import localFirebaseConfig from '../../firebase-applet-config.json';
 
-const app = initializeApp(firebaseConfig);
+// Lógica Híbrida: Prioriza variables de Vercel, si no existen usa el JSON local
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || localFirebaseConfig.apiKey || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || localFirebaseConfig.authDomain || "",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || localFirebaseConfig.projectId || "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || localFirebaseConfig.storageBucket || "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || localFirebaseConfig.messagingSenderId || "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || localFirebaseConfig.appId || "",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || localFirebaseConfig.measurementId || ""
+};
 
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+const databaseId = import.meta.env.VITE_FIREBASE_FIRESTORE_DB_ID || localFirebaseConfig.firestoreDatabaseId;
+
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  console.error("Firebase App initialization failed:", error);
+  // Fallback app initialization with minimal config to prevent crash
+  app = initializeApp({ apiKey: "missing" });
+}
+
+export const db = getFirestore(app, databaseId);
 export const auth = getAuth(app);
 
 // Test connection as per guidelines
