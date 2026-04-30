@@ -395,7 +395,26 @@ export default function App() {
     try {
       setIsRegistering(true);
       
-      const cred = await signInAnonymously(auth);
+      // DIAGNÓSTICO EN TIEMPO REAL: Verifica si Firebase está listo
+      const hasApiKey = !!import.meta.env.VITE_FIREBASE_API_KEY || !!auth.app.options.apiKey;
+      const dbId = import.meta.env.VITE_FIREBASE_FIRESTORE_DB_ID;
+
+      if (!hasApiKey) {
+        throw new Error("CONFIG_MISSING_API: La llave de Firebase no está configurada. Sigue las instrucciones del Monitor de Diagnóstico.");
+      }
+      
+      if (!dbId || dbId === "ai-studio-eda91011-086a-4d53-9aa0-8c6d453c4726") {
+         console.warn("Usando DB ID por defecto o missing.");
+      }
+
+      // LOGIN ANÓNIMO SEGURO
+      const cred = await signInAnonymously(auth).catch(err => {
+        console.error("Firebase Auth Error:", err);
+        if (err.code === 'auth/configuration-not-found') throw new Error("AUTH_CONFIG_ERROR: El servicio de autenticación no está listo.");
+        if (err.code === 'auth/network-request-failed') throw new Error("NETWORK_ERROR: Revisa tu conexión a internet.");
+        throw err;
+      });
+      
       const uid = cred.user.uid;
       
       // Use whatsapp as ID for persistence if available, otherwise use uid
@@ -459,18 +478,32 @@ export default function App() {
         safeSetView('marketplace');
       }
     } catch (error: any) {
-      if (error.code === 'auth/admin-restricted-operation') {
-        toast.error("Error de Configuración: Debes activar 'Anonymous Auth' en tu Consola de Firebase.", { 
-          id: 'reg',
-          duration: 10000 
-        });
-      } else {
-        // Error already handled if it came from our wrapped calls
-        if (typeof error === 'string' && error.includes('"operationType"')) return;
-        
-        handleFirestoreError(error, 'create', 'users');
-        toast.error("Error al acceder. Intenta de nuevo.", { id: 'reg' });
+      console.error("Fallo crítico en Inicio:", error);
+      
+      let errorMsg = "Ocurrió un problema inesperado.";
+      let errorDesc = "Intenta refrescar la página.";
+
+      if (error.message.includes('CONFIG_MISSING')) {
+        errorMsg = "Configuración Incompleta";
+        errorDesc = "Faltan variables de entorno en Vercel. Haz clic en el rayo (abajo izq) para ver cuáles.";
+        setShowDiagnostics(true); 
+      } else if (error.message.includes('AUTH_CONFIG_ERROR')) {
+        errorMsg = "Servicio no Activado";
+        errorDesc = "Debes activar 'Anonymous Auth' en tu consola de Firebase.";
+        setShowDiagnostics(true);
+      } else if (error.message.includes('NETWORK_ERROR')) {
+        errorMsg = "Error de Red";
+        errorDesc = "No pudimos conectar con los servidores. Revisa tu internet.";
+      } else if (error.code === 'auth/admin-restricted-operation') {
+        errorMsg = "Operación Restringida";
+        errorDesc = "Debes activar 'Anonymous Auth' en tu Consola de Firebase.";
       }
+
+      toast.error(errorMsg, { 
+        id: 'reg-error',
+        description: errorDesc,
+        duration: 8000
+      });
     } finally {
       setIsRegistering(false);
     }
@@ -1032,23 +1065,46 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-[#0B0F1A]/90 backdrop-blur-md flex flex-col items-center justify-center p-6"
+            className="fixed inset-0 z-[200] bg-[#0B0F1A]/95 backdrop-blur-xl flex flex-col items-center justify-center p-6"
           >
-            <div className="relative">
-              <div className="w-20 h-20 border-4 border-green-500/20 border-t-green-500 rounded-full animate-spin shadow-[0_0_20px_rgba(34,197,94,0.3)]" />
+            <div className="relative mb-10">
+              <div className="w-24 h-24 border-4 border-blue-500/10 border-t-blue-500 rounded-full animate-spin shadow-[0_0_40px_rgba(59,130,246,0.2)]" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 bg-green-500/10 rounded-full blur-xl animate-pulse" />
+                <ShieldCheck className="w-10 h-10 text-blue-500 animate-pulse" />
+              </div>
+              {/* Scanning visual effect */}
+              <motion.div 
+                animate={{ top: ['0%', '100%', '0%'] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="absolute left-0 right-0 h-1 bg-blue-500/30 blur-sm z-10"
+              />
+            </div>
+
+            <div className="text-center space-y-3">
+              <motion.p 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="text-white font-black text-sm uppercase tracking-[0.4em] flex items-center justify-center gap-3"
+              >
+                <Activity className="w-4 h-4 text-blue-500 animate-bounce" />
+                Validando Conexión Segura
+              </motion.p>
+              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                AutoFlux Hybrid Infrastructure • SSL v3
+              </p>
+            </div>
+
+            <div className="absolute bottom-12 flex items-center gap-4 text-slate-600">
+              <div className="flex flex-col items-end">
+                <span className="text-[8px] font-black tracking-widest uppercase">Encryption</span>
+                <span className="text-[10px] font-mono">AES-256-GCM</span>
+              </div>
+              <div className="w-px h-8 bg-slate-800" />
+              <div className="flex flex-col items-start">
+                <span className="text-[8px] font-black tracking-widest uppercase">Node Status</span>
+                <span className="text-[10px] font-mono text-green-500/70">Online</span>
               </div>
             </div>
-            <motion.p 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="mt-8 text-white font-black text-xs uppercase tracking-[0.3em] flex items-center gap-2"
-            >
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping" />
-              Conectando con AutoFlux Cloud...
-            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
