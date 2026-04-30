@@ -130,6 +130,14 @@ export default function App() {
     }
   }, []);
 
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  
+  const envStatus = {
+    firebase: !!import.meta.env.VITE_FIREBASE_API_KEY,
+    gemini: !!import.meta.env.VITE_GEMINI_API_KEY || !!process.env.GEMINI_API_KEY,
+    dbId: !!import.meta.env.VITE_FIREBASE_FIRESTORE_DB_ID
+  };
+
   // --- ARQUITECTURA SENIOR: OPTIMIZACIÓN Y SEGURIDAD ---
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 15;
@@ -942,10 +950,82 @@ export default function App() {
     );
   };
 
+  const renderDiagnostics = () => (
+    <AnimatePresence>
+      {showDiagnostics && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+        >
+          <div className="bg-slate-900 border border-slate-700 p-8 rounded-[2rem] max-w-lg w-full shadow-2xl relative">
+            <button 
+              onClick={() => setShowDiagnostics(false)}
+              className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-full text-slate-400"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+              <Activity className="text-blue-400" /> Diagnóstico de Sistema
+            </h2>
+            
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-slate-800/50 border border-slate-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-300">Firebase API Key</span>
+                  {envStatus.firebase ? <CheckCircle2 className="text-green-500 w-5 h-5" /> : <AlertCircle className="text-red-500 w-5 h-5" />}
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-800/50 border border-slate-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-300">Gemini (AI) API Key</span>
+                  {envStatus.gemini ? <CheckCircle2 className="text-green-500 w-5 h-5" /> : <AlertCircle className="text-red-500 w-5 h-5" />}
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-800/50 border border-slate-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-300">Firestore Database ID</span>
+                  {envStatus.dbId ? <CheckCircle2 className="text-green-500 w-5 h-5" /> : <AlertCircle className="text-red-500 w-5 h-5" />}
+                </div>
+              </div>
+            </div>
+
+            {!envStatus.firebase && (
+              <div className="mt-8 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                <p className="text-red-400 text-sm leading-relaxed">
+                  <strong>⚠️ IMPORTANTE:</strong> Faltan variables de entorno en Vercel. 
+                  Copia los comandos que te di en AI Studio y pégalos en la sección "Environment Variables" de tu proyecto en Vercel.
+                </p>
+              </div>
+            )}
+
+            <button 
+              onClick={() => setShowDiagnostics(false)}
+              className="w-full mt-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold transition-all"
+            >
+              Entendido
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   return (
     <>
       <Toaster position="top-right" expand={false} richColors theme="dark" />
+      {renderDiagnostics()}
       
+      {/* Emergency Toggle for Vercel debugging */}
+      <button 
+        onClick={() => setShowDiagnostics(true)}
+        className="fixed bottom-4 left-4 z-[400] w-10 h-10 bg-slate-900/50 border border-white/10 rounded-full flex items-center justify-center text-slate-500 hover:text-white transition-opacity opacity-20 hover:opacity-100"
+        title="Diagnostic Monitor"
+      >
+        <Activity className="w-4 h-4" />
+      </button>
+
       <AnimatePresence>
         {isRegistering && (
           <motion.div 

@@ -2,7 +2,7 @@ CONFIGURACIÓN DE VARIABLES PARA VERCEL - AUTOFLUX
 
 Copia y pega estas variables en la sección "Environment Variables" de tu proyecto en Vercel:
 
-1. GEMINI_API_KEY
+1. VITE_GEMINI_API_KEY
    Valor: (Tu llave de Google AI Studio)
 
 2. VITE_FIREBASE_API_KEY
@@ -30,10 +30,14 @@ Copia y pega estas variables en la sección "Environment Variables" de tu proyec
    Valor: ai-studio-eda91011-086a-4d53-9aa0-8c6d453c4726
 
 ---------------------------------------------------------
+NUEVA FUNCIÓN: MONITOR DE ESTADO
+Si la aplicación se queda "pegada", busca un pequeño icono de actividad (un rayo/pulso) en la esquina inferior IZQUIERDA de la pantalla. Al hacerle clic, verás qué variables de Vercel te faltan por configurar.
+
+---------------------------------------------------------
 Instrucciones rápidas:
 1. Ve a Vercel -> Tu Proyecto -> Settings -> Environment Variables.
 2. Agrega cada una con su nombre (Key) y valor (Value).
-3. Asegúrate de que las que empiezan con VITE_ tengan exactamente ese nombre para que el frontend pueda leerlas.
+3. Asegúrate de usar VITE_GEMINI_API_KEY en lugar de solo GEMINI_API_KEY para que el navegador pueda leerla.
 
 ---------------------------------------------------------
 PASOS PARA EL BOTÓN MÁGICO (DESPLIEGUE):

@@ -3,7 +3,11 @@ import { BUSINESS_RULES } from "../constants";
 
 export const getAdvisorResponse = async (message: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("API_KEY_MISSING: No se encontró la clave de API de Gemini. Asegúrate de configurar VITE_GEMINI_API_KEY.");
+    }
+    const ai = new GoogleGenAI({ apiKey });
     const model = ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: [

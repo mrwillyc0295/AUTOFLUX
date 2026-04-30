@@ -1,8 +1,19 @@
 import { GoogleGenAI } from "@google/genai";
 import { Car } from "../types";
 
-// Initialize AI
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize AI lazily to prevent crash if env vars are missing during load
+let aiClient: GoogleGenAI | null = null;
+
+const getAIClient = () => {
+  if (!aiClient) {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY non configurada");
+    }
+    aiClient = new GoogleGenAI({ apiKey });
+  }
+  return aiClient;
+};
 
 const ADVISOR_SYSTEM_PROMPT = `
 Eres el "AutoFlux Strategic Advisor", el analista de datos más sofisticado para el mercado automotriz de Venezuela.
@@ -47,6 +58,7 @@ export const getSmartAnalysis = async (cars: Car[], marketContext?: { totalSelle
   `;
 
   try {
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
@@ -93,6 +105,7 @@ export const getMarketTrendsAnalysis = async (allCars: Car[]) => {
   `;
 
   try {
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
