@@ -398,6 +398,60 @@ export const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                 </motion.button>
               </div>
 
+              {/* --- SISTEMA DE REFERIDOS ESTRATÉGICOS --- */}
+              <div className="glass-card p-8 rounded-[2.5rem] border-blue-500/20 bg-gradient-to-br from-blue-600/10 to-indigo-600/10 shadow-lg shadow-blue-900/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-blue-500/20 rounded-xl">
+                    <Share2 className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-widest">Programa de Referidos</h3>
+                </div>
+                <p className="text-[10px] text-slate-400 leading-relaxed mb-6 font-medium">
+                  Convierte este {car.make} en tu oportunidad de negocio. Comparte este perfil y gana una comisión si se concreta la venta.
+                </p>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Tu Nombre (Para rastreo)</label>
+                    <input 
+                      type="text"
+                      placeholder="Ej. Juan Pérez"
+                      id="referrer-name-details"
+                      className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-white text-xs font-bold focus:outline-none focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <button 
+                    onClick={() => {
+                      const nameInput = document.getElementById('referrer-name-details') as HTMLInputElement;
+                      const referrerName = nameInput?.value.trim() || 'Un aliado AutoFlux';
+                      const message = `🚀 OPORTUNIDAD AUTOFLUX: Refiero este ${car.make} ${car.model} (${car.year}) por $${car.price.toLocaleString()}. \n\nVer peritaje y detalles aquí: ${window.location.origin}/car/${car.id}?ref=${encodeURIComponent(referrerName)} \n\nReferido por: ${referrerName} \n\n¿Te interesa? Avísame para gestionar tu prioridad de atención.`;
+                      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+                      toast.success("Enlace de referido listo para compartir", {
+                        description: `Compartiendo como: ${referrerName}`
+                      });
+                    }}
+                    className="w-full py-4 bg-white/5 border border-blue-500/30 text-blue-400 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-3 group"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Enviar por WhatsApp
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const nameInput = document.getElementById('referrer-name-details') as HTMLInputElement;
+                      const referrerName = nameInput?.value.trim() || 'aliado';
+                      navigator.clipboard.writeText(`${window.location.origin}/car/${car.id}?ref=${encodeURIComponent(referrerName)}`);
+                      toast.success("Enlace copiado al portapapeles", {
+                        description: `Enlace personalizado para ${referrerName}.`
+                      });
+                    }}
+                    className="w-full py-3 text-slate-500 hover:text-white text-[9px] font-black uppercase tracking-[0.2em] transition-colors"
+                  >
+                    Copiar URL Directa
+                  </button>
+                </div>
+              </div>
+
               <div className="glass-card p-6 rounded-[2rem] border-white/10">
                 <div className="flex items-center gap-3 text-slate-400 mb-4">
                   <Clock className="w-4 h-4" />

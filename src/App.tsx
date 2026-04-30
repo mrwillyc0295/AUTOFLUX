@@ -1059,52 +1059,16 @@ export default function App() {
         <Activity className="w-4 h-4" />
       </button>
 
+
       <AnimatePresence>
-        {isRegistering && (
+        {false && isRegistering && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] bg-[#0B0F1A]/95 backdrop-blur-xl flex flex-col items-center justify-center p-6"
           >
-            <div className="relative mb-10">
-              <div className="w-24 h-24 border-4 border-blue-500/10 border-t-blue-500 rounded-full animate-spin shadow-[0_0_40px_rgba(59,130,246,0.2)]" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <ShieldCheck className="w-10 h-10 text-blue-500 animate-pulse" />
-              </div>
-              {/* Scanning visual effect */}
-              <motion.div 
-                animate={{ top: ['0%', '100%', '0%'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="absolute left-0 right-0 h-1 bg-blue-500/30 blur-sm z-10"
-              />
-            </div>
-
-            <div className="text-center space-y-3">
-              <motion.p 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="text-white font-black text-sm uppercase tracking-[0.4em] flex items-center justify-center gap-3"
-              >
-                <Activity className="w-4 h-4 text-blue-500 animate-bounce" />
-                Validando Conexión Segura
-              </motion.p>
-              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">
-                AutoFlux Hybrid Infrastructure • SSL v3
-              </p>
-            </div>
-
-            <div className="absolute bottom-12 flex items-center gap-4 text-slate-600">
-              <div className="flex flex-col items-end">
-                <span className="text-[8px] font-black tracking-widest uppercase">Encryption</span>
-                <span className="text-[10px] font-mono">AES-256-GCM</span>
-              </div>
-              <div className="w-px h-8 bg-slate-800" />
-              <div className="flex flex-col items-start">
-                <span className="text-[8px] font-black tracking-widest uppercase">Node Status</span>
-                <span className="text-[10px] font-mono text-green-500/70">Online</span>
-              </div>
-            </div>
+            {/* Loading UI removed as per user request */}
           </motion.div>
         )}
       </AnimatePresence>
@@ -1609,6 +1573,25 @@ export default function App() {
                                       <Share2 className="w-4 h-4" />
                                       Compartir
                                     </button>
+
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const referrerName = window.prompt("Ingresa tu nombre para rastrear tu comisión:", "");
+                                        if (referrerName === null) return; // Cancelled
+                                        
+                                        const finalName = referrerName.trim() || 'Un aliado AutoFlux';
+                                        const message = `🚀 OPORTUNIDAD: Refiero este ${car.make} ${car.model} de $${car.price.toLocaleString()}. \n\nVer aquí: ${window.location.origin}/car/${car.id}?ref=${encodeURIComponent(finalName)} \n\nReferido por: ${finalName}`;
+                                        
+                                        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+                                        toast.success("Refiere este vehículo", { description: `Gana comisiones. Compartiendo como: ${finalName}` });
+                                      }}
+                                      className="w-full py-5 bg-green-600/10 border border-green-500/30 rounded-2xl text-green-400 font-bold text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-900/10"
+                                    >
+                                      <MessageCircle className="w-4 h-4" />
+                                      Gana por Referir
+                                    </button>
+
                                     <button 
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -2205,15 +2188,21 @@ export default function App() {
                   onMakeOffer={(amount) => handleOffer(selectedCar, amount)}
                   onRequestVideo={(car) => {
                     handleVideoRequest(car);
-                    window.open(`https://wa.me/${AUTOfLUX_ADMIN_WHATSAPP}?text=${encodeURIComponent(`Hola AutoFlux, solicito video del ${car.make} ${car.model} (${car.year}) por $${car.price.toLocaleString()}.`)}`);
+                    const refName = localStorage.getItem('autoflux_ref');
+                    const refParam = refName ? `\n(Referido por: ${refName})` : '';
+                    window.open(`https://wa.me/${AUTOfLUX_ADMIN_WHATSAPP}?text=${encodeURIComponent(`Hola AutoFlux, solicito video del ${car.make} ${car.model} (${car.year}) por $${car.price.toLocaleString()}.${refParam}`)}`);
                   }}
                   onChatWithAdvisor={(car) => {
+                    const refName = localStorage.getItem('autoflux_ref');
+                    const refPrefix = refName ? `[SISTEMA DE REFERIDO: ${refName.toUpperCase()}] ` : '';
+                    const greeting = `${refPrefix}Me interesa el ${car.make} ${car.model} de $${car.price.toLocaleString()}. ¿Cómo es el proceso?`;
+                    
                     setMessages(prev => [...prev, {
                       role: 'user',
-                      text: `Me interesa el ${car.make} ${car.model} de $${car.price.toLocaleString()}. ¿Cómo es el proceso?`,
+                      text: greeting,
                       timestamp: new Date()
                     }]);
-                    handleSendMessage(undefined, `Me interesa el ${car.make} ${car.model} de $${car.price.toLocaleString()}. ¿Cómo es el proceso?`);
+                    handleSendMessage(undefined, greeting);
                   }}
                 />
               ) : (
