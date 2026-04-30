@@ -131,7 +131,7 @@ export const CreatePostView: React.FC<CreatePostViewProps> = ({ onBack, onPublis
         commission: parseFloat(commission) || 0,
         image: photos[0] || "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800",
         images: photos,
-        video: video || undefined
+        ...(video ? { video } : {})
       });
       setIsPublishing(false);
     }, 1000);

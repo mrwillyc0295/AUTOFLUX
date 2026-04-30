@@ -427,7 +427,7 @@ export default function App() {
           whatsapp,
           role,
           createdAt: serverTimestamp(),
-          referredBy: referralId || undefined
+          ...(referralId ? { referredBy: referralId } : {})
         };
         await setDoc(userRef, profile).catch(err => {
           handleFirestoreError(err, 'create', 'users');
@@ -602,7 +602,7 @@ export default function App() {
         name: profileName,
         whatsapp: profileWhatsapp,
         bio: profileBio,
-        photo: profileImage || undefined
+        ...(profileImage ? { photo: profileImage } : {})
       };
       
       if (isNameChanged) {

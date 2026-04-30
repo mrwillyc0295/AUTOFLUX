@@ -287,10 +287,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ cars, users, onD
             {/* Quick Stats Summary */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
               {[
-                { label: 'Valor Base', value: `$${totalBaseValue.toLocaleString()}`, icon: DollarSign, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-                { label: 'Valor Market', value: `$${totalMarketValue.toLocaleString()}`, icon: TrendingUp, color: 'text-green-400', bg: 'bg-green-400/10' },
-                { label: 'Total Clientes', value: users.length, icon: Users, color: 'text-purple-400', bg: 'bg-purple-400/10' },
-                { label: 'Conversión', value: `${globalConversion.toFixed(1)}%`, icon: Activity, color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+                { label: 'Vehículos en Stock', value: cars.length, icon: CarFront, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+                { label: 'Valor Prom. Inventario', value: `$${Math.round(avgPrice).toLocaleString()}`, icon: TrendingUp, color: 'text-green-400', bg: 'bg-green-400/10' },
+                { label: 'Dealers Activos', value: users.filter(u => u.status !== 'inactive').length, icon: Users, color: 'text-purple-400', bg: 'bg-purple-400/10' },
+                { label: 'Tasa Conversión', value: `${globalConversion.toFixed(1)}%`, icon: Activity, color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
               ].map((stat, i) => (
                 <div key={i} className="glass-card p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] relative overflow-hidden group">
                   <div className={cn("absolute top-0 right-0 w-16 md:w-24 h-16 md:h-24 -mr-4 md:-mr-8 -mt-4 md:-mt-8 rounded-full blur-2xl md:blur-3xl opacity-20 transition-opacity group-hover:opacity-40", stat.bg)} />
