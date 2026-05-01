@@ -54,7 +54,10 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister, 
               className="relative group"
             >
               <button 
-                onClick={() => onRegister('Invitado', '', 'marketplace')}
+                onClick={() => {
+                  console.log("Marketplace register clicked");
+                  onRegister('Invitado', '', 'marketplace');
+                }}
                 className="w-full py-6 px-5 rounded-[1.5rem] font-extrabold text-xs uppercase tracking-[0.2em] transition-all flex flex-col items-center gap-2 relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-2xl shadow-blue-600/30 group-hover:shadow-blue-500/40 cursor-pointer border border-white/10"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -81,6 +84,7 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister, 
             >
               <button 
                 onClick={() => {
+                  console.log("Dealer register clicked");
                   setSelectedRole('seller');
                   setStep('form');
                 }}

@@ -370,6 +370,7 @@ export default function App() {
   };
 
   const handleRegistration = async (name: string, whatsapp: string, role: 'marketplace' | 'seller') => {
+    console.log("Registration started:", name, whatsapp, role);
     try {
       setIsRegistering(true);
       
