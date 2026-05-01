@@ -33,18 +33,10 @@
     <style>
       /* App Shell CSS inline para carga instantánea */
       body, html { margin: 0; padding: 0; background-color: #0B0F1A; }
-      #shell-spinner {
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
-        border-top-color: #3b82f6; border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
     </style>
   </head>
   <body>
     <div id="root">
-      <div id="shell-spinner"></div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
     <script>

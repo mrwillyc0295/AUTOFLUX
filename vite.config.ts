@@ -20,6 +20,7 @@ export default defineConfig(({mode}) => {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
           cleanupOutdatedCaches: true,
           sourcemap: true,
+          navigationPreload: true,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,
@@ -72,6 +73,7 @@ export default defineConfig(({mode}) => {
           theme_color: '#0B0F1A',
           background_color: '#0B0F1A',
           display: 'standalone',
+          start_url: '/',
           icons: [
             {
               src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMEIwRjFBIi8+PC9zdmc+',
