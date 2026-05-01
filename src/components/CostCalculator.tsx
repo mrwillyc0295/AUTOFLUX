@@ -1,12 +1,21 @@
 import React, { useState, useMemo } from 'react';
 import { Calculator, Percent, DollarSign, Settings2 } from 'lucide-react';
 
-export const CostCalculator = ({ carPrice }: { carPrice: number }) => {
+export const CostCalculator = ({ carPrice, engineLiters }: { carPrice: number; engineLiters?: string }) => {
   const [shipping, setShipping] = useState(1500);
   const [taxMode, setTaxMode] = useState<'percentage' | 'fixed'>('percentage');
   const [taxPercentage, setTaxPercentage] = useState(20);
   const [fixedTax, setFixedTax] = useState(carPrice * 0.2);
   const [isConfiguring, setIsConfiguring] = useState(false);
+
+  const engineMultiplier = useMemo(() => {
+    if (!engineLiters) return 0;
+    const liters = parseFloat(engineLiters);
+    if (isNaN(liters)) return 0;
+    // Higher engine liters -> higher cost adjustment
+    // Example: 1.0L is base, +$500 per liter above 1.0
+    return Math.max(0, (liters - 1.0) * 500);
+  }, [engineLiters]);
 
   const calculatedTaxes = useMemo(() => {
     return taxMode === 'percentage' 
@@ -14,7 +23,7 @@ export const CostCalculator = ({ carPrice }: { carPrice: number }) => {
       : fixedTax;
   }, [carPrice, taxMode, taxPercentage, fixedTax]);
 
-  const total = useMemo(() => carPrice + shipping + calculatedTaxes, [carPrice, shipping, calculatedTaxes]);
+  const total = useMemo(() => carPrice + shipping + calculatedTaxes + engineMultiplier, [carPrice, shipping, calculatedTaxes, engineMultiplier]);
 
   return (
     <div className="bg-slate-900/50 p-6 rounded-3xl border border-slate-800 backdrop-blur-sm">
@@ -37,6 +46,13 @@ export const CostCalculator = ({ carPrice }: { carPrice: number }) => {
           <span className="text-slate-400">Precio Vehículo</span>
           <span className="text-white font-bold">${carPrice.toLocaleString()}</span>
         </div>
+        
+        {engineMultiplier > 0 && (
+          <div className="flex justify-between text-sm items-center">
+            <span className="text-slate-400">Ajuste por Motor</span>
+            <span className="text-white font-bold">+${engineMultiplier.toLocaleString()}</span>
+          </div>
+        )}
         
         <div className="flex justify-between text-sm items-center">
           <span className="text-slate-400">Envío</span>

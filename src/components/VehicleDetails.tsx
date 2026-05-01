@@ -466,7 +466,7 @@ export const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 
               {/* Centralized Communication Buttons Removed from here */}
 
-              <CostCalculator carPrice={car.price} />
+              <CostCalculator carPrice={car.price} engineLiters={car.engineLiters} />
             </div>
           </div>
         </div>

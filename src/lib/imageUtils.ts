@@ -32,36 +32,7 @@ export function getOptimizedImageUrl(baseUrl: string, config: ImageResizeConfig 
 
   // Handle Picsum.photos
   if (baseUrl.includes('picsum.photos')) {
-    // Picsum format is https://picsum.photos/seed/picsum/width/height
-    // or https://picsum.photos/width/height
-    // We try to replace the width/height parts
-    const parts = baseUrl.split('/');
-    
-    // If it has a seed, it looks like: https://picsum.photos/seed/ID/W/H
-    if (baseUrl.includes('/seed/')) {
-      const seedIndex = parts.indexOf('seed');
-      if (seedIndex !== -1 && parts.length >= seedIndex + 4) {
-        parts[seedIndex + 2] = width.toString();
-        parts[seedIndex + 3] = (height || Math.round(width * 0.66)).toString();
-        return parts.join('/');
-      }
-    }
-
-    // Default picsum: https://picsum.photos/W/H
-    // We assume the last two parts are width/height if they are numbers
-    const lastPart = parseInt(parts[parts.length - 1]);
-    const secondLastPart = parseInt(parts[parts.length - 2]);
-
-    if (!isNaN(lastPart) && !isNaN(secondLastPart)) {
-      parts[parts.length - 2] = width.toString();
-      parts[parts.length - 1] = (height || Math.round(width * 0.66)).toString();
-      return parts.join('/');
-    } else if (!isNaN(lastPart)) {
-      // Maybe only width was provided: https://picsum.photos/W
-      parts[parts.length - 1] = width.toString();
-      if (height) parts.push(height.toString());
-      return parts.join('/');
-    }
+    return 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800&h=533';
   }
 
   // Generic fallback: just return original

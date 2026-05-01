@@ -1198,29 +1198,6 @@ export default function App() {
                       </div>
                       <button 
                         onClick={async () => {
-                          if (!checkRateLimit('ai_analysis', 5000)) return;
-                          try {
-                            const filtered = filteredCars;
-                            
-                            const totalSellers = new Set(cars.map(c => c.seller)).size;
-                            const totalViews = cars.reduce((acc, c) => acc + (c.views || 0), 0);
-
-                            toast.loading(`IA Consultando mercado para ${filterMake || 'todos los vehículos'}...`, { id: "analysis" });
-                            const response = await getSmartAnalysis(filtered, { totalSellers, totalViews });
-                            setAnalysisResult(response);
-                            toast.success("Análisis completado", { id: "analysis" });
-                          } catch (error) {
-                            toast.error(error instanceof Error ? error.message : "Error al conectarse a la Inteligencia Artificial.", { id: "analysis" });
-                          }
-                        }}
-                        className="w-full lg:w-auto h-[56px] px-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.15em] shadow-xl shadow-blue-500/20 hover:scale-[1.02] hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-3 group shrink-0"
-                      >
-                         <Zap className="w-4 h-4 fill-white group-hover:animate-pulse" />
-                         <span>Buscar con IA</span>
-                      </button>
-
-                      <button 
-                        onClick={async () => {
                           if (!checkRateLimit('trends_analysis', 10000)) return;
                           try {
                             setIsAnalyzingTrends(true);
