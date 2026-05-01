@@ -101,6 +101,21 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["carId", "resellerId", "amount", "status", "createdAt"]
+    },
+    "referral": {
+      "title": "Referral",
+      "description": "Tracking of people referred by a member",
+      "type": "object",
+      "properties": {
+        "referrerUserId": { "type": "string" },
+        "refereeName": { "type": "string" },
+        "refereeWhatsApp": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "contacted", "converted", "rejected"] },
+        "commission": { "type": "number" },
+        "linkedCarId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["referrerUserId", "refereeName", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -127,6 +142,10 @@
     "/reservations/{reservationId}": {
       "schema": "reservation",
       "description": "Reservation records including affiliate tracking"
+    },
+    "/referrals/{referralId}": {
+      "schema": "referral",
+      "description": "Records of referred prospects"
     }
   }
 }

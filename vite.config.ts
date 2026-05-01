@@ -15,9 +15,11 @@ export default defineConfig(({mode}) => {
       viteCompression({ algorithm: 'gzip' }),
       VitePWA({
         registerType: 'autoUpdate',
-        injectRegister: 'auto',
+        injectRegister: 'script',
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
+          cleanupOutdatedCaches: true,
+          sourcemap: true,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,
@@ -49,7 +51,7 @@ export default defineConfig(({mode}) => {
             },
             {
               urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
-              handler: 'StaleWhileRevalidate',
+              handler: 'NetworkFirst',
               options: {
                 cacheName: 'firestore-data-cache',
                 expiration: {

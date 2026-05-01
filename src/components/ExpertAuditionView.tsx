@@ -301,17 +301,6 @@ export const ExpertAuditionView: React.FC<ExpertAuditionViewProps> = ({ onBack, 
                       </motion.div>
                     );
                   })
-                ) : isLoading ? (
-                  <div className="flex flex-col items-center justify-center py-20 space-y-6">
-                    <div className="relative">
-                      <div className="w-20 h-20 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-                      <Brain className="w-8 h-8 text-blue-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-white font-bold text-lg">El panel está deliberando...</p>
-                      <p className="text-slate-500 text-sm">Analizando datos y perspectivas estratégicas</p>
-                    </div>
-                  </div>
                 ) : (
                   <div className="text-center py-20 bg-white/5 rounded-[3rem] border border-dashed border-white/10">
                     <Users className="w-16 h-16 text-slate-700 mx-auto mb-4" />

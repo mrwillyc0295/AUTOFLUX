@@ -32,18 +32,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   return (
     <div className={cn("relative overflow-hidden bg-slate-800/50", containerClassName)}>
-      <AnimatePresence>
-        {!isLoaded && !error && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 flex items-center justify-center bg-slate-800 animate-pulse"
-          >
-             <div className="w-8 h-8 rounded-full border-2 border-blue-500/20 border-t-blue-500 animate-spin" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {error ? (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-900 text-slate-500 text-[10px] font-bold uppercase p-4 text-center">
           Error al cargar imagen
@@ -60,7 +48,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
             console.error(`Failed to load image: ${optimizedSrc}`);
           }}
           loading={priority ? "eager" : "lazy"}
-          fetchpriority={priority ? "high" : "auto"}
+          fetchPriority={priority ? "high" : "auto"}
           decoding="async"
           referrerPolicy="no-referrer-when-downgrade"
           className={cn(

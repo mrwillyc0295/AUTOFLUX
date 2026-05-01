@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Share2, Copy, Check, Users, DollarSign, ArrowLeft, ExternalLink, QrCode } from 'lucide-react';
+import { Share2, Copy, Check, Users, DollarSign, ArrowLeft, ExternalLink, QrCode, Plus } from 'lucide-react';
 import { UserProfile } from '../types';
 import { toast } from 'sonner';
+import { collection, addDoc, query, where, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { db } from '../services/firebase';
 
 interface MemberReferralViewProps {
   user: UserProfile;
@@ -11,7 +13,42 @@ interface MemberReferralViewProps {
 
 export const MemberReferralView: React.FC<MemberReferralViewProps> = ({ user, onBack }) => {
   const [copied, setCopied] = useState(false);
-  
+  const [referrals, setReferrals] = useState<any[]>([]);
+  const [newRefereeName, setNewRefereeName] = useState('');
+  const [newRefereeWhatsApp, setNewRefereeWhatsApp] = useState('');
+  const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    if (!user.uid) return;
+    const q = query(collection(db, 'referrals'), where('referrerUserId', '==', user.uid));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setReferrals(data);
+    });
+    return unsubscribe;
+  }, [user.uid]);
+
+  const addReferral = async () => {
+    if (!newRefereeName) return;
+    setAdding(true);
+    try {
+      await addDoc(collection(db, 'referrals'), {
+        referrerUserId: user.uid,
+        refereeName: newRefereeName,
+        refereeWhatsApp: newRefereeWhatsApp || '',
+        status: 'pending',
+        createdAt: serverTimestamp()
+      });
+      setNewRefereeName('');
+      setNewRefereeWhatsApp('');
+      toast.success("¡Referido registrado!");
+    } catch (e) {
+      toast.error("Error al registrar referido");
+    } finally {
+      setAdding(false);
+    }
+  };
+
   // En producción esto vendría de la URL real, aquí usamos una base genérica
   const baseUrl = window.location.origin;
   const referralLink = `${baseUrl}?ref=${user.name.replace(/\s+/g, '').toLowerCase()}`;
@@ -93,20 +130,50 @@ export const MemberReferralView: React.FC<MemberReferralViewProps> = ({ user, on
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 text-center">
             <Users className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Clicks</p>
-            <p className="text-2xl font-black text-slate-900">0</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Referidos</p>
+            <p className="text-2xl font-black text-slate-900">{referrals.length}</p>
           </div>
           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 text-center">
             <DollarSign className="w-6 h-6 text-green-500 mx-auto mb-2" />
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Comisión</p>
-            <p className="text-2xl font-black text-slate-900">$0</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Comisión Pendiente</p>
+            <p className="text-2xl font-black text-slate-900">${referrals.filter(r => r.status === 'converted').length * 100}</p>
           </div>
           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 text-center col-span-2 md:col-span-1">
             <ExternalLink className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Reservas</p>
-            <p className="text-2xl font-black text-slate-900">0</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Convertidos</p>
+            <p className="text-2xl font-black text-slate-900">{referrals.filter(r => r.status === 'converted').length}</p>
           </div>
         </div>
+
+        {/* Add Referral Form */}
+        <section className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
+          <h3 className="font-bold text-slate-900 mb-4 tracking-tight">Registrar nuevo prospecto</h3>
+          <div className="grid gap-3">
+             <input type="text" placeholder="Nombre completo del referido" className="w-full bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500/20" value={newRefereeName} onChange={e => setNewRefereeName(e.target.value)} />
+             <input type="text" placeholder="WhatsApp (opcional)" className="w-full bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500/20" value={newRefereeWhatsApp} onChange={e => setNewRefereeWhatsApp(e.target.value)} />
+             <button onClick={addReferral} disabled={adding || !newRefereeName} className="w-full py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all">
+                {adding ? 'Registrando...' : 'Registrar Prospecto'}
+             </button>
+          </div>
+        </section>
+
+        {/* Referral List */}
+        <section className="space-y-4">
+          <h3 className="font-bold text-slate-900 px-2 tracking-tight">Tus Referidos</h3>
+          <div className="grid gap-3">
+            {referrals.map(ref => (
+               <div key={ref.id} className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-slate-900">{ref.refereeName}</p>
+                    <p className="text-[10px] text-slate-500">{new Date(ref.createdAt?.toDate()).toLocaleDateString()}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${ref.status === 'converted' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    {ref.status}
+                  </span>
+               </div>
+            ))}
+          </div>
+        </section>
 
         {/* How it works */}
         <section className="space-y-4">

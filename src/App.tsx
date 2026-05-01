@@ -48,6 +48,7 @@ import { ExpertAuditionView } from './components/ExpertAuditionView';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { MemberReferralView } from './components/MemberReferralView';
 import { OptimizedImage } from './components/OptimizedImage';
+import { ShippingConfig } from './components/ShippingConfig';
 
 type AppView = 'dashboard' | 'marketplace' | 'seller-dashboard' | 'member-profile' | 'seller-profile' | 'create-post' | 'vehicle-details' | 'admin-dashboard' | 'reservation-payment' | 'comparison' | 'expert-audition' | 'member-referral';
 
@@ -1689,6 +1690,8 @@ export default function App() {
                           📸 <span className="uppercase">Guía de Publicación:</span> Para validar tu anuncio sube 10 fotos (4 Exterior • 2 Interior • 2 Tablero • 2 Detalles Técnicos).
                         </p>
                       </div>
+
+                      <ShippingConfig />
 
                       <div className="flex flex-col sm:flex-row gap-4 w-full">
                         <button 

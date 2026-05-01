@@ -67,6 +67,17 @@ service cloud.firestore {
              (!('updatedAt' in data) || (true)); 
     }
 
+    function isValidReferral(data) {
+      let validKeys = data.keys().hasAll(['referrerUserId', 'refereeName', 'status', 'createdAt']);
+      let validTypes = data.referrerUserId is string && data.referrerUserId.size() <= 128 &&
+                       data.refereeName is string && data.refereeName.size() <= 150 &&
+                       data.status in ['pending', 'contacted', 'converted', 'rejected'];
+      return validKeys && validTypes &&
+             (!('refereeWhatsApp' in data) || (data.refereeWhatsApp is string && data.refereeWhatsApp.size() <= 50)) &&
+             (!('commission' in data) || (data.commission is number)) &&
+             (!('linkedCarId' in data) || (data.linkedCarId is string && data.linkedCarId.size() <= 128));
+    }
+
     match /users/{userId} {
       allow get: if isValidId(userId);
       // Solo el mismo usuario puede listarse a sí mismo o Admin
@@ -104,8 +115,8 @@ service cloud.firestore {
       allow update: if isValidAuth() && isValidId(chatId) && (chatId == request.auth.uid || isAdmin());
       
       match /messages/{messageId} {
-        allow get, list: if isValidAuth() && isValidId(messageId) && (chatId == request.auth.uid || isAdmin());
-        allow create: if isValidAuth() && isValidId(messageId) && (chatId == request.auth.uid || isAdmin()) && 
+        allow read: if isValidAuth() && (chatId == request.auth.uid || isAdmin());
+        allow write: if isValidAuth() && (chatId == request.auth.uid || isAdmin()) && 
                        incoming().keys().hasAll(['role', 'text', 'timestamp']) && incoming().keys().size() == 3 &&
                        incoming().role in ['user', 'model', 'admin'] && incoming().text is string && incoming().text.size() <= 5000;
       }
@@ -126,6 +137,18 @@ service cloud.firestore {
       
       // Solo Admin puede actualizar estados
       allow update: if isAdmin();
+    }
+
+    match /referrals/{referralId} {
+      allow get: if isValidAuth() && isValidId(referralId) && (isAdmin() || resource.data.referrerUserId == request.auth.uid);
+      allow list: if isValidAuth() && (isAdmin() || resource.data.referrerUserId == request.auth.uid);
+      
+      allow create: if isValidAuth() && isValidId(referralId) && isValidReferral(incoming()) && incoming().referrerUserId == request.auth.uid;
+      
+      // Solo admin puede cambiar estados
+      allow update: if isValidAuth() && isValidId(referralId) && isAdmin();
+      
+      allow delete: if false; 
     }
   }
 }
